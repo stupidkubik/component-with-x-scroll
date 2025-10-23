@@ -1,24 +1,15 @@
 import { render, screen } from "@testing-library/react";
 import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
-import { PlansSection, type PlanCardData } from "./PlansSection";
+import {
+  PlansSection,
+  defaultPlanCards,
+  type PlanCardData,
+} from "./PlansSection";
 
-const cards: PlanCardData[] = [
-  {
-    label: "Plan A",
-    title: "Primera opción",
-    description: "Descripción inicial con contenido de prueba.",
-  },
-  {
-    label: "Plan B",
-    title: "Segunda opción",
-    description: "Descripción secundaria para validar overflow.",
-  },
-  {
-    label: "Plan C",
-    title: "Tercera opción",
-    description: "Otro texto para asegurar que hay scroll.",
-  },
-];
+const cards: PlanCardData[] = defaultPlanCards.map((card, index) => ({
+  ...card,
+  label: `${card.label} (${index})`,
+}));
 
 type Rect = ReturnType<HTMLElement["getBoundingClientRect"]>;
 
@@ -154,8 +145,8 @@ describe("PlansSection wheel scrolling", () => {
   it("does not intercept wheel scrolling until the section is fully visible", async () => {
     currentRect = {
       ...defaultRect,
-      top: 200,
-      bottom: 1000,
+      top: 400,
+      bottom: 1170,
     };
 
     const { getScrollLeft } = await renderPlansSection();

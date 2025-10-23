@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Вертикальная → горизонтальная прокрутка (контейнерная, не на весь экран)</title>
+  <style>
+    :root { --vh: 100vh; }
+    html, body { height: 100%; }
+    body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"; line-height: 1.5; }
+    section { padding: 24px; }
+
+    .hero, .after { min-height: 60vh; display: grid; place-items: center; }
+    .hero { background: #0f172a; color: #e2e8f0; }
+    .after { background: #f1f5f9; color: #0f172a; }
+
+    /* Горизонтальная секция — больше НЕ на весь экран. Высота задаётся переменной --h */
+    .hscroll {
+      /* можно переопределять прямо на элементе: style="--h: 520px" */
+      --h: 480px;
+      position: relative;
+      padding: 0;
+      background: #0b1020;
+      color: #e5e7eb;
+    }
+
+    /* Трек: внутри может быть в правой колонке, ширина берётся от контейнера */
+    .hscroll__track {
+      height: var(--h);
+      width: 100%;
+      display: flex;
+      flex-flow: row nowrap;
+      align-items: stretch;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-snap-type: x mandatory;
+      scrollbar-gutter: stable both-edges; /* избегаем сдвига контента из-за появления полосы */
+      overscroll-behavior-x: contain;
+      overscroll-behavior-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .hscroll__track:focus { outline: none; }
+    .hscroll__track.no-snap { scroll-snap-type: none; }
+
+    .slide {
+      flex: 0 0 100%;            /* КЛЮЧ: ширина слайда = ширина контейнера (не 100vw) */
+      height: var(--h);
+      scroll-snap-align: start;
+      display: grid; place-items: center;
+      font-size: clamp(20px, 4vw, 42px);
+      padding: 24px;
+    }
+    .slide:nth-child(1) { background: #1e293b; }
+    .slide:nth-child(2) { background: #334155; }
+    .slide:nth-child(3) { background: #475569; }
+    .slide:nth-child(4) { background: #64748b; }
+
+    .card { max-width: 60ch; text-align: center; }
+    .kbd { font: 600 0.9em/1.2 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; background: #0f172a; color: #e2e8f0; padding: 2px 6px; border-radius: 6px; }
+
+    .debug {
+      position: fixed; inset: auto 12px 12px auto; z-index: 9999;
+      background: rgba(15, 23, 42, 0.9); color: #e2e8f0; font-size: 12px;
+      border-radius: 10px; padding: 10px 12px; box-shadow: 0 6px 20px rgba(0,0,0,.2);
+    }
+    .debug code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+    .debug button { margin-top: 6px; padding: 6px 10px; border-radius: 8px; border: none; cursor: pointer; }
+
+    /* Демонстрация макета с правой колонкой */
+    .layout {
+      display: grid; grid-template-columns: 1fr minmax(500px, 600px); gap: 24px; align-items: start;
+      max-width: 1200px; margin: 0 auto;
+    }
+    .layout .stub { min-height: 100vh; background: #111827; color: #cbd5e1; display: grid; place-items: center; border-radius: 12px; }
+  </style>
+</head>
+<body>
+  <section class="hero">
+    <div class="card">
+      <h1>Вертикальная → горизонтальная (контейнерная версия)</h1>
+      <p>Секция не обязана быть на всю высоту. Ширина слайдов = ширине контейнера (например, правой колонки 500–600px). Режим включается, когда секция видна ≥ 70% (и отключается при ≤ 60%).</p>
+      <details style="margin-top:16px;">
+        <summary>Debug / Tests</summary>
+        <p>Нажмите кнопку ниже — запустятся базовые проверки поведения.</p>
+        <button id="run-tests">Run tests</button>
+        <pre id="test-log" style="text-align:left; max-width:70ch; white-space:pre-wrap; background:#111827; color:#e5e7eb; padding:12px; border-radius:8px; overflow:auto; max-height:260px;"></pre>
+      </details>
+    </div>
+  </section>
+
+  <!-- Демо макет с правой колонкой -->
+  <section class="layout" aria-label="Демонстрация в макете">
+    <div class="stub">Левая колонка контента</div>
+    <section id="hscroll" class="hscroll" aria-label="Горизонтальная галерея" style="--h: 520px;">
+      <div id="htrack" class="hscroll__track" tabindex="-1" role="region" aria-roledescription="горизонтальная прокрутка">
+        <article class="slide"><div class="card">Слайд 1<br /><small>Колесо/свайп вниз → вправо. Вверх → влево.</small></div></article>
+        <article class="slide"><div class="card">Слайд 2</div></article>
+        <article class="slide"><div class="card">Слайд 3</div></article>
+        <article class="slide"><div class="card">Слайд 4</div></article>
+      </div>
+    </section>
+  </section>
+
+  <section class="after">
+    <div class="card">
+      <h2>После горизонтального контента</h2>
+      <p>Вертикальная прокрутка возвращается мгновенно.</p>
+      <p>Поддерживаются также клавиши <span class="kbd">PgUp/PgDn</span>, <span class="kbd">Space/Shift+Space</span>, <span class="kbd">↑/↓</span>, <span class="kbd">Home/End</span>.</p>
+    </div>
+  </section>
+
+  <div class="debug" aria-live="polite" aria-atomic="true">
+    <div>active: <code id="dbg-active">false</code></div>
+    <div>start/end: <code id="dbg-edges">-/-</code></div>
+    <div>ratio: <code id="dbg-ratio">0</code></div>
+  </div>
+
+  <script>
+  (function () {
+    'use strict';
+
+    const container = document.getElementById('hscroll');
+    const track = document.getElementById('htrack');
+
+    let active = false;
+    let touchY = 0;
+    let snapTimer = null;
+
+    // Порог активации/деактивации (гистерезис): 70% / 60%
+    const ACTIVATE_RATIO = 0.7;
+    const DEACTIVATE_RATIO = 0.6;
+
+    function beginFreeScroll() {
+      track.classList.add('no-snap');
+      if (snapTimer) { clearTimeout(snapTimer); }
+      snapTimer = setTimeout(endFreeScroll, 140); // пауза после последнего события
+    }
+    function endFreeScroll() {
+      track.classList.remove('no-snap');
+      // Программный снап к ближайшему слайду (слайды = ширине контейнера)
+      const w = track.clientWidth || 1;
+      const idx = Math.round(track.scrollLeft / w);
+      const maxIdx = Math.max(0, track.children.length - 1);
+      const clamped = Math.min(maxIdx, Math.max(0, idx));
+      const dest = clamped * w;
+      track.scrollTo({ left: dest, behavior: 'smooth' });
+    }
+
+    const atStart = () => track.scrollLeft <= 1;
+    const atEnd = () => Math.ceil(track.scrollLeft + track.clientWidth) >= (track.scrollWidth - 1);
+
+    // Диагностика
+    const dbgActive = document.getElementById('dbg-active');
+    const dbgEdges  = document.getElementById('dbg-edges');
+    const dbgRatio  = document.getElementById('dbg-ratio');
+    function updateDebug(ratio = null) {
+      dbgActive.textContent = String(active);
+      dbgEdges.textContent = `${atStart() ? 'start' : '-'} / ${atEnd() ? 'end' : '-'}`;
+      if (ratio !== null) dbgRatio.textContent = ratio.toFixed(3);
+    }
+
+    function activate() {
+      if (active) return;
+      active = true;
+      window.addEventListener('wheel', onWheel, { passive: false });
+      window.addEventListener('keydown', onKey, { passive: false });
+      track.addEventListener('touchstart', onTouchStart, { passive: true });
+      track.addEventListener('touchmove', onTouchMove, { passive: false });
+      track.setAttribute('aria-live', 'polite');
+      updateDebug();
+    }
+
+    function deactivate() {
+      if (!active) return;
+      active = false;
+      window.removeEventListener('wheel', onWheel);
+      window.removeEventListener('keydown', onKey);
+      track.removeEventListener('touchstart', onTouchStart);
+      track.removeEventListener('touchmove', onTouchMove);
+      track.removeAttribute('aria-live');
+      updateDebug();
+    }
+
+    // Колесо/трекпад: вертикальный deltaY → горизонтальный scrollLeft
+    function onWheel(e) {
+      if (!active) return;
+      const dyLike = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX || e.deltaY;
+      const dy = dyLike;
+      const goingDown = dy > 0;
+      const passThrough = (atStart() && !goingDown) || (atEnd() && goingDown);
+      if (passThrough) return; // отдаём странице
+
+      beginFreeScroll();
+      track.scrollLeft += dy;
+      e.preventDefault();
+      e.stopPropagation();
+      updateDebug();
+    }
+
+    // Клавиатура
+    function onKey(e) {
+      if (!active) return;
+      const key = e.key;
+      const page = track.clientWidth * 0.9;
+      const step = Math.max(40, Math.round(track.clientWidth * 0.2));
+      const goLeft = (amount) => { if (atStart()) return; track.scrollBy({ left: -amount, behavior: 'smooth' }); };
+      const goRight = (amount) => { if (atEnd()) return; track.scrollBy({ left: amount, behavior: 'smooth' }); };
+      switch (key) {
+        case 'ArrowDown': e.preventDefault(); goRight(step); break;
+        case 'PageDown':  e.preventDefault(); goRight(page); break;
+        case ' ':         e.preventDefault(); e.shiftKey ? goLeft(page) : goRight(page); break;
+        case 'ArrowUp':   e.preventDefault(); goLeft(step); break;
+        case 'PageUp':    e.preventDefault(); goLeft(page); break;
+        case 'Home':      e.preventDefault(); track.scrollTo({ left: 0, behavior: 'smooth' }); break;
+        case 'End':       e.preventDefault(); track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' }); break;
+        default: break;
+      }
+      updateDebug();
+    }
+
+    // Тач
+    function onTouchStart(e) { touchY = e.touches[0].clientY; }
+    function onTouchMove(e) {
+      if (!active) return;
+      const currentY = e.touches[0].clientY;
+      const dy = touchY - currentY;
+      const goingDown = dy > 0;
+      const passThrough = (atStart() && !goingDown) || (atEnd() && goingDown);
+      if (passThrough) return;
+
+      beginFreeScroll();
+      track.scrollLeft += dy;
+      touchY = currentY;
+      e.preventDefault();
+      updateDebug();
+    }
+
+    // Доля видимой высоты элемента во вьюпорте (0..1)
+    const visibleRatio = (el) => {
+      const r = el.getBoundingClientRect();
+      const vpTop = 0;
+      const vpBottom = window.innerHeight; // если нужен учёт фикс-хедера, уменьши vpBottom
+      const inter = Math.max(0, Math.min(r.bottom, vpBottom) - Math.max(r.top, vpTop));
+      return inter / Math.max(1, r.height);
+    };
+
+    // Для обратной совместимости с тестом имени: теперь означает "достаточно видно"
+    const fullyVisible = (el) => visibleRatio(el) >= ACTIVATE_RATIO;
+
+    function onScroll() {
+      const ratio = visibleRatio(container);
+      if (ratio >= ACTIVATE_RATIO && !active) {
+        activate();
+      } else if (ratio <= DEACTIVATE_RATIO && active) {
+        deactivate();
+      }
+      updateDebug(ratio);
+    }
+
+    // Pointer / Focus activation (при наведении/фокусе включаем перехват)
+    function onPointerEnter() {
+      if (!active) activate();
+    }
+    function onPointerLeave() {
+      const ratio = visibleRatio(container);
+      if (ratio <= DEACTIVATE_RATIO && active) deactivate();
+    }
+    function onFocusIn() {
+      if (!active) activate();
+    }
+    function onFocusOut() {
+      const ratio = visibleRatio(container);
+      if (ratio <= DEACTIVATE_RATIO && active) deactivate();
+    }
+    // Bootstrap для первого тач-события, если режим ещё не активен
+    function onTouchStartBootstrap(e) {
+      if (!active) {
+        try { touchY = e.touches[0].clientY; } catch (_) {}
+        activate();
+      }
+    }
+
+    // IntersectionObserver (один, корректно закрытый)
+    const thresholds = Array.from({ length: 101 }, (_, i) => i / 100);
+    const io = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.target !== container) continue;
+        const ratio = entry.intersectionRatio;
+        if (ratio >= ACTIVATE_RATIO) {
+          activate();
+        } else if (ratio <= DEACTIVATE_RATIO) {
+          deactivate();
+        }
+        updateDebug(ratio);
+      }
+    }, { threshold: thresholds, rootMargin: '0px' });
+
+    io.observe(container);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    onScroll();
+
+    // Наведение/фокус → включаем режим; уход и низкая видимость → выключаем
+    track.addEventListener('pointerenter', onPointerEnter);
+    track.addEventListener('pointerleave', onPointerLeave);
+    track.addEventListener('mouseenter', onPointerEnter); // fallback
+    track.addEventListener('mouseleave', onPointerLeave);
+    track.addEventListener('focusin', onFocusIn);
+    track.addEventListener('focusout', onFocusOut);
+    track.addEventListener('touchstart', onTouchStartBootstrap, { passive: true });
+
+    // ===== Тесты =====
+    function log(line) {
+      const el = document.getElementById('test-log');
+      if (!el) return;
+      el.textContent += line + "\n";
+      el.scrollTop = el.scrollHeight;
+    }
+    async function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+    async function runTests() {
+      const el = document.getElementById('test-log');
+      if (el) el.textContent = '';
+
+      log('Test 0: header offset = 0px'); // явный, чтобы не зависеть от внешнего DOM
+      log('Test 1: секция в кадре → active=true');
+      container.scrollIntoView({ behavior: 'instant', block: 'start' });
+      window.scrollBy({ top: 1 });
+      await wait(200);
+      log('  active=' + active);
+
+      // Новый тест: активация при частичной видимости ≥ 70%
+      log('Test 1a: секция видна ~75% → active=true');
+      const h = container.getBoundingClientRect().height;
+      window.scrollBy({ top: Math.round(h * 0.25) }); // делаем ~75% видимости
+      await wait(200);
+      const r1a = visibleRatio(container);
+      log('  ratio≈' + r1a.toFixed(2) + ', active=' + active + (active ? ' ✅' : ' ❌'));
+
+      // Новый тест: деактивация при видимости ≤ 60%
+      log('Test 1b: секция видна ~50% → active=false');
+      window.scrollBy({ top: Math.round(h * 0.35) }); // доводим до ~50-60%
+      await wait(200);
+      const r1b = visibleRatio(container);
+      log('  ratio≈' + r1b.toFixed(2) + ', active=' + active + (!active ? ' ✅' : ' ❌'));
+
+      // Возвращаем секцию в начало для последующих тестов
+      container.scrollIntoView({ behavior: 'instant', block: 'start' });
+      await wait(150);
+
+      // Новый тест: 1c — hover/pointerenter активирует при ratio < 0.7
+      log('Test 1c: pointerenter активирует при ratio≈0.4');
+      const h2 = container.getBoundingClientRect().height;
+      window.scrollBy({ top: Math.round(h2 * 0.6) }); // ~40% видимости
+      await wait(150);
+      const r1c0 = visibleRatio(container);
+      log('  ratio≈' + r1c0.toFixed(2) + ', active(before)=' + active);
+      const pe = new PointerEvent('pointerenter', { bubbles: true, pointerType: 'mouse' });
+      track.dispatchEvent(pe);
+      await wait(50);
+      log('  active(after)=' + active + (active ? ' ✅' : ' ❌'));
+
+      // Новый тест: 1d — pointerleave при низкой видимости выключает
+      log('Test 1d: pointerleave при ratio≈0.4 → active=false');
+      const pl = new PointerEvent('pointerleave', { bubbles: true, pointerType: 'mouse' });
+      track.dispatchEvent(pl);
+      await wait(50);
+      log('  active=' + active + (!active ? ' ✅' : ' ❌'));
+
+      // Восстанавливаем секцию в начало для Test 2..4
+      container.scrollIntoView({ behavior: 'instant', block: 'start' });
+      await wait(150);
+
+      log('Test 2: deltaY вниз двигает вправо');
+      const before = track.scrollLeft;
+      const evt = new WheelEvent('wheel', { deltaY: 120, bubbles: true, cancelable: true });
+      window.dispatchEvent(evt);
+      await wait(50);
+      const after = track.scrollLeft;
+      log('  scrollLeft: ' + before + ' → ' + after + (after > before ? ' ✅' : ' ❌'));
+      if (after === before) {
+        const beforeB = track.scrollLeft;
+        const fake = { deltaY: 120, deltaX: 0, preventDefault() {}, };
+        onWheel(fake);
+        await wait(50);
+        const afterB = track.scrollLeft;
+        log('  2b direct handler: ' + beforeB + ' → ' + afterB + (afterB > beforeB ? ' ✅' : ' ❌'));
+      }
+
+      log('Test 3: на начале секции deltaY вверх отдаётся странице (pass-through)');
+      track.scrollTo({ left: 0 });
+      await wait(50);
+      const evtUp = new WheelEvent('wheel', { deltaY: -120, bubbles: true, cancelable: true });
+      const before2 = track.scrollLeft;
+      window.dispatchEvent(evtUp);
+      await wait(50);
+      const after2 = track.scrollLeft;
+      log('  scrollLeft неизменен у начала: ' + before2 + ' → ' + after2 + (after2 === before2 ? ' ✅' : ' ❌'));
+
+      log('Test 4: выход из секции выключает режим');
+      document.querySelector('.after').scrollIntoView({ behavior: 'instant' });
+      await wait(200);
+      log('  active=' + active + (active === false ? ' ✅' : ' ❌'));
+    }
+
+    document.getElementById('run-tests')?.addEventListener('click', runTests);
+
+    // Экспорт для ручной отладки в консоли
+    window.HScrollDebug = {
+      get state() { return { active, atStart: atStart(), atEnd: atEnd(), scrollLeft: track.scrollLeft }; },
+      runTests,
+    };
+
+    setInterval(() => updateDebug(), 250);
+  })();
+  </script>
+</body>
+</html>
