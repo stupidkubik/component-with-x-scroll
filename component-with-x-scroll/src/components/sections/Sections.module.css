@@ -1,0 +1,348 @@
+.section {
+  background-color: var(--color-background-black);
+  color: var(--color-white);
+  border-radius: 0;
+  padding: 64px clamp(24px, 6vw, 64px);
+  box-shadow: 0 40px 80px rgba(14, 14, 14, 0.5);
+}
+
+.sectionInner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  gap: 48px;
+}
+
+.plansSection {
+  min-height: 770px;
+}
+
+.plansLayout {
+  display: grid;
+  grid-template-columns: minmax(260px, 360px) 1fr;
+  gap: clamp(32px, 6vw, 72px);
+  align-items: stretch;
+}
+
+.plansAside {
+  display: grid;
+  gap: 32px;
+  align-content: flex-start;
+}
+
+.plansAsideHeading {
+  display: grid;
+  gap: 16px;
+}
+
+.plansAsideHeading p {
+  max-width: 320px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.plansFeatured {
+  display: grid;
+  gap: 16px;
+  padding: 32px;
+  border-radius: 32px;
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+}
+
+.plansFeaturedMedia {
+  display: flex;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.plansFeaturedMediaPrimary,
+.plansFeaturedMediaSecondary {
+  flex: 1;
+  min-height: 160px;
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.plansFeaturedMediaPrimary {
+  background: radial-gradient(
+      circle at 30% 30%,
+      rgba(255, 214, 197, 0.75),
+      rgba(26, 26, 26, 0.05)
+    ),
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.12),
+      rgba(255, 255, 255, 0)
+    );
+}
+
+.plansFeaturedMediaSecondary {
+  background: radial-gradient(
+      circle at 70% 40%,
+      rgba(108, 201, 137, 0.65),
+      rgba(26, 26, 26, 0.05)
+    ),
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.12),
+      rgba(255, 255, 255, 0)
+    );
+}
+
+.plansScroller {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding-right: clamp(24px, 5vw, 48px);
+}
+
+.sectionContent {
+  display: grid;
+  gap: 24px;
+  max-width: 480px;
+}
+
+.sectionContent h1,
+.sectionContent h2 {
+  font-family: "Gramatika", "PT Sans", sans-serif;
+  font-size: clamp(36px, 5vw, 56px);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  font-weight: 700;
+}
+
+.sectionContent p {
+  font-size: 18px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.sectionMedia {
+  width: clamp(220px, 32vw, 320px);
+  height: clamp(220px, 32vw, 320px);
+  border-radius: 48px;
+  background: var(--gradient-soft-overlay);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "PT Sans", sans-serif;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--color-black-90);
+  background-color: var(--color-background-orange);
+  width: fit-content;
+}
+
+.ctaButton {
+  padding: 16px 28px;
+  border-radius: 999px;
+  border: none;
+  font-family: "Gramatika", "PT Sans", sans-serif;
+  background-color: var(--color-green-normal);
+  color: var(--color-black-90);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  width: fit-content;
+}
+
+.ctaButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(58, 166, 94, 0.35);
+}
+
+.sectionScroller {
+  position: relative;
+  overflow: hidden;
+}
+
+.sectionScroller::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: clamp(64px, 12vw, 160px);
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    rgba(26, 26, 26, 0) 0%,
+    rgba(26, 26, 26, 1) 70%
+  );
+}
+
+.sectionHeader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.sectionHeader h2 {
+  font-size: clamp(32px, 4vw, 44px);
+  margin-top: 16px;
+}
+
+.sectionHeader p {
+  max-width: 320px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.scroller {
+  margin: 0;
+  padding: 0 clamp(24px, 5vw, 48px) 8px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+  scroll-snap-type: x proximity;
+  scroll-padding-left: clamp(24px, 5vw, 48px);
+  scroll-padding-right: clamp(24px, 5vw, 48px);
+}
+
+.scroller::-webkit-scrollbar {
+  height: 6px;
+}
+
+.scroller::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scroller::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 999px;
+}
+
+.scrollerTrack {
+  display: flex;
+  gap: 32px;
+  min-width: max(100%, 1280px);
+  padding-bottom: 16px;
+  align-items: stretch;
+}
+
+.card {
+  flex: 0 0 clamp(300px, 38vw, 360px);
+  padding: 32px;
+  border-radius: 28px;
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: grid;
+  gap: 16px;
+  scroll-snap-align: start;
+}
+
+.cardLabel {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.65);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-family: "PT Sans", sans-serif;
+  font-weight: 600;
+}
+
+.card h3 {
+  font-family: "Gramatika", "PT Sans", sans-serif;
+  font-size: 24px;
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+.card p {
+  font-family: "PT Sans", sans-serif;
+  color: rgba(255, 255, 255, 0.72);
+  line-height: 1.6;
+}
+
+.cardMedia {
+  height: 120px;
+  border-radius: 24px;
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(108, 201, 137, 0.5),
+    rgba(26, 26, 26, 0.1)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.placeholderGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 16px;
+  width: 100%;
+  margin-top: 16px;
+}
+
+.placeholderGrid div {
+  aspect-ratio: 4 / 3;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px dashed rgba(255, 255, 255, 0.24);
+}
+
+@media (max-width: 1024px) {
+  .sectionInner {
+    gap: 32px;
+  }
+
+  .sectionContent {
+    max-width: 100%;
+  }
+
+  .plansLayout {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .plansScroller {
+    padding-right: 0;
+  }
+
+  .scroller {
+    padding: 0 24px 8px;
+    scroll-padding-left: 24px;
+    scroll-padding-right: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .section {
+    padding: 48px 24px;
+  }
+
+  .plansAside {
+    gap: 24px;
+  }
+
+  .plansFeatured {
+    padding: 24px;
+  }
+
+  .plansFeaturedMedia {
+    flex-direction: column;
+  }
+
+  .sectionMedia {
+    width: 100%;
+    height: 220px;
+  }
+
+  .scroller {
+    padding: 0 16px 8px;
+    scroll-padding-left: 16px;
+    scroll-padding-right: 16px;
+  }
+
+  .card {
+    flex-basis: 280px;
+  }
+}

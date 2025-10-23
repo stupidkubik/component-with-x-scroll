@@ -1,6 +1,12 @@
+import {
+  HeroSection,
+  PlansSection,
+  StoriesSection,
+  type PlanCardData,
+} from "@/components/sections";
 import styles from "./page.module.css";
 
-const scrollerCards = [
+const planCards: PlanCardData[] = [
   {
     label: "Plan de carrera seguro",
     title: "Consulta de carrera gratuita",
@@ -19,73 +25,37 @@ const scrollerCards = [
     description:
       "Obtén respuestas puntuales y guía constante para mantener el ritmo de estudio.",
   },
+  {
+    label: "Seguimiento continuo",
+    title: "Eventos en vivo cada semana",
+    description:
+      "Resuelve dudas en directo con mentores y mantén tu motivación con la comunidad.",
+  },
 ];
 
 export default function Home() {
   return (
     <main className={styles.page}>
-      <section className={styles.section}>
-        <div className={styles.sectionInner}>
-          <div className={styles.sectionContent}>
-            <span className={styles.tag}>Tu camino</span>
-            <h1>Tu primer empleo tech paso a paso</h1>
-            <p>
-              Sigue un plan claro y enfocado en resultados con el acompañamiento
-              de especialistas en carrera.
-            </p>
-            <button type="button" className={styles.ctaButton}>
-              Agenda una consulta
-            </button>
-          </div>
-          <div className={styles.sectionMedia} aria-hidden="true" />
-        </div>
-      </section>
+      <HeroSection
+        eyebrow="Tu camino"
+        title="Tu primer empleo tech paso a paso"
+        description="Sigue un plan claro y enfocado en resultados con el acompañamiento de especialistas en carrera."
+        ctaLabel="Agenda una consulta"
+      />
 
-      <section className={`${styles.section} ${styles.sectionScroller}`}>
-        <div className={styles.sectionInner}>
-          <header className={styles.sectionHeader}>
-            <div>
-              <span className={styles.tag}>Planes personalizados</span>
-              <h2>Elegí el acompañamiento ideal para tu objetivo</h2>
-            </div>
-            <p>
-              Desplaza horizontalmente para revisar las propuestas claves del
-              programa.
-            </p>
-          </header>
+      <PlansSection
+        eyebrow="Planes personalizados"
+        title="Elegí el acompañamiento ideal para tu objetivo"
+        description="Desplaza horizontalmente para revisar las propuestas claves del programa."
+        cards={planCards}
+      />
 
-          <div className={styles.scroller} role="region" aria-label="Planes">
-            <div className={styles.scrollerTrack}>
-              {scrollerCards.map((card) => (
-                <article key={card.title} className={styles.card}>
-                  <span className={styles.cardLabel}>{card.label}</span>
-                  <h3>{card.title}</h3>
-                  <p>{card.description}</p>
-                  <div className={styles.cardMedia} aria-hidden="true" />
-                </article>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className={styles.section}>
-        <div className={styles.sectionInner}>
-          <div className={styles.sectionContent}>
-            <span className={styles.tag}>Resultados reales</span>
-            <h2>Historias de quienes ya dieron el salto</h2>
-            <p>
-              Conecta con la comunidad, aprende de sus experiencias y descubre
-              cómo potenciar tu perfil profesional.
-            </p>
-            <div className={styles.placeholderGrid} aria-hidden="true">
-              <div />
-              <div />
-              <div />
-            </div>
-          </div>
-        </div>
-      </section>
+      <StoriesSection
+        eyebrow="Resultados reales"
+        title="Historias de quienes ya dieron el salto"
+        description="Conecta con la comunidad, aprende de sus experiencias y descubre cómo potenciar tu perfil profesional."
+        placeholders={3}
+      />
     </main>
   );
 }
