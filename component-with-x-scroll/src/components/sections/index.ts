@@ -1,4 +1,4 @@
-export { HeroSection } from "./HeroSection";
-export type { PlanCardData } from "./PlansSection";
-export { PlansSection, defaultPlanCards } from "./PlansSection";
-export { StoriesSection } from "./StoriesSection";
+export { HeaderSection } from "./HeaderSection";
+export type { PlanCardData } from "./MainSection";
+export { MainSection, defaultPlanCards } from "./MainSection";
+export { FooterSection } from "./FooterSection";

@@ -1,66 +1,77 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useId, useRef } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import styles from "./Sections.module.css";
+
+const cardImagePaths = [
+  "/images/cards/card-image-1.png",
+  "/images/cards/card-image-2.png",
+  "/images/cards/card-image-3.png",
+  "/images/cards/card-image-4.png",
+  "/images/cards/card-image-5.png",
+];
+
+const getCardImage = (index: number) =>
+  cardImagePaths[index] ?? cardImagePaths[index % cardImagePaths.length];
 
 export type PlanCardData = {
   label: string;
   title: string;
   description: string;
+  image: string;
+  width?: number;
 };
 
 export const defaultPlanCards: PlanCardData[] = [
   {
     label: "Plan de carrera seguro",
     title: "Consulta de carrera gratuita",
-    description:
-      "Obtendrás un plan personalizado basado en tus fortalezas, objetivos y experiencia.",
+    description: "Obtendrás un plan personalizado basado en tus fortalezas, objetivos y experiencia",
+    image: getCardImage(0),
+    width: 407,
   },
   {
     label: "Habilidades tech en demanda",
     title: "Bootcamp en línea",
-    description:
-      "Aprende de forma práctica todo lo necesario para convertirte en Analista de Datos.",
+    description: "Aprende de forma práctica todo lo necesario para convertirte en Analista de Datos",
+    image: getCardImage(1),
+    width: 534,
   },
   {
-    label: "Mentorías guiadas",
-    title: "Sesiones 1:1 con expertos",
-    description:
-      "Obtén respuestas puntuales y guía constante para mantener el ritmo de estudio.",
+    label: "¡Estás listo para ser contratado!",
+    title: "Acelerador de carrera",
+    description: "Trabajarás 1 a 1 con un coach personal para elaborar un CV llamativo, armar un portafolio de proyectos reales y llegar a tus entrevistas preparado",
+    image: getCardImage(2),
+    width: 538,
   },
   {
-    label: "Seguimiento continuo",
-    title: "Eventos en vivo cada semana",
-    description:
-      "Resuelve dudas en directo con mentores y mantén tu motivación con la comunidad.",
+    label: "Ingresos remotos + equilibrio trabajo-vida",
+    title: "Tu primer empleo tech",
+    description: "Podrás ganar desde $30,000 MXN al mes, con la oportunidad de trabajar a nivel global",
+    image: getCardImage(3),
+    width: 498,
   },
   {
-    label: "Comunidad activa",
-    title: "Networking con profesionales",
-    description:
-      "Participa en espacios colaborativos y conecta con otros aspirantes y expertos del sector.",
-  },
-  {
-    label: "Portafolio en marcha",
-    title: "Proyectos prácticos guiados",
-    description:
-      "Construye piezas reales para tu portafolio mientras recibes retroalimentación personalizada.",
+    label: "Una red que te respalda",
+    title: "Apoyo de la comunidad TripleTen",
+    description: "Conectarás con personas afines, para compartir logros y seguir creciendo juntos",
+    image: getCardImage(4),
+    width: 530,
   },
 ];
 
-type PlansSectionProps = {
-  eyebrow: string;
-  title: string;
-  description: string;
+type MainSectionProps = {
+  title: ReactNode;
+  button: string;
   cards?: PlanCardData[];
 };
 
-export function PlansSection({
-  eyebrow,
+export function MainSection({
   title,
-  description,
+  button,
   cards = defaultPlanCards,
-}: PlansSectionProps) {
+}: MainSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const scrollerRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -92,11 +103,11 @@ export function PlansSection({
       snapTimer = setTimeout(endFreeScroll, 140);
     };
 
-const endFreeScroll = () => {
-  if (noSnapClass) {
-    track.classList.remove(noSnapClass);
-  }
-};
+    const endFreeScroll = () => {
+      if (noSnapClass) {
+        track.classList.remove(noSnapClass);
+      }
+    };
 
     const visibleRatio = () => {
       const rect = container.getBoundingClientRect();
@@ -319,35 +330,24 @@ const endFreeScroll = () => {
     };
   }, []);
 
-  const resolvedCards = cards.length > 0 ? cards : defaultPlanCards;
-  const [featuredCard, ...restCards] = resolvedCards;
-  const scrollerCards = restCards.length > 0 ? restCards : resolvedCards;
+  const scrollerCards = cards.length > 0 ? cards : defaultPlanCards;
+  const headingId = useId();
 
   return (
-    <section ref={sectionRef} className={`${styles.section} ${styles.plansSection}`}>
-      <div className={`${styles.sectionInner} ${styles.plansLayout}`}>
-        <aside className={styles.plansAside}>
-          <div className={styles.plansAsideHeading}>
-            <span className={styles.tag}>{eyebrow}</span>
-            <h2>{title}</h2>
-            <p>{description}</p>
+    <section ref={sectionRef} className={`${styles.section} ${styles.mainSection}`}>
+      <div className={`${styles.sectionInner} ${styles.mainLayout}`}>
+        <aside className={styles.mainLeadColumn}>
+          <div className={styles.mainLeadHeader}>
+            <h2 id={headingId}>{title}</h2>
+            <button type="button" className={styles.ctaButton}>
+              {button}
+            </button>
           </div>
-          {featuredCard && (
-            <article className={styles.plansFeatured}>
-              <span className={styles.cardLabel}>{featuredCard.label}</span>
-              <h3>{featuredCard.title}</h3>
-              <p>{featuredCard.description}</p>
-              <div className={styles.plansFeaturedMedia} aria-hidden="true">
-                <div className={styles.plansFeaturedMediaPrimary} />
-                <div className={styles.plansFeaturedMediaSecondary} />
-              </div>
-            </article>
-          )}
         </aside>
         <div
-          className={`${styles.sectionScroller} ${styles.plansScroller}`}
+          className={`${styles.sectionScroller} ${styles.mainScroller}`}
           role="region"
-          aria-label={title}
+          aria-labelledby={headingId}
         >
           <div
             ref={scrollerRef}
@@ -356,14 +356,32 @@ const endFreeScroll = () => {
             tabIndex={-1}
           >
             <div className={styles.scrollerTrack}>
-              {scrollerCards.map((card) => (
-                <article key={card.title} className={styles.card} role="listitem">
-                  <span className={styles.cardLabel}>{card.label}</span>
-                  <h3>{card.title}</h3>
-                  <p>{card.description}</p>
-                  <div className={styles.cardMedia} aria-hidden="true" />
-                </article>
-              ))}
+              {scrollerCards.map((card) => {
+                const cardStyle: CSSProperties | undefined = card.width
+                  ? { width: `${card.width}px` }
+                  : undefined;
+                const imageStyle: CSSProperties | undefined = card.image
+                  ? { backgroundImage: `url(${card.image})` }
+                  : undefined;
+
+                return (
+                  <article
+                    key={card.title}
+                    className={styles.card}
+                    role="listitem"
+                    style={cardStyle}
+                  >
+                    <span className={styles.cardLabel}>{card.label}</span>
+                    <h3>{card.title}</h3>
+                    <p>{card.description}</p>
+                    <div
+                      className={styles.cardImage}
+                      aria-hidden="true"
+                      style={imageStyle}
+                    />
+                  </article>
+                );
+              })}
             </div>
           </div>
         </div>

@@ -1,10 +1,10 @@
 import { render, screen } from "@testing-library/react";
 import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
 import {
-  PlansSection,
+  MainSection,
   defaultPlanCards,
   type PlanCardData,
-} from "./PlansSection";
+} from "./MainSection";
 
 const cards: PlanCardData[] = defaultPlanCards.map((card, index) => ({
   ...card,
@@ -44,12 +44,11 @@ afterAll(() => {
   rectSpy.mockRestore();
 });
 
-async function renderPlansSection() {
+async function renderMainSection() {
   render(
-    <PlansSection
-      eyebrow="Planes personalizados"
+    <MainSection
       title="Elige tu plan"
-      description="Lista de planes con overflow horizontal."
+      button="Explorar planes"
       cards={cards}
     />
   );
@@ -120,9 +119,9 @@ function mockHorizontalOverflow(
   };
 }
 
-describe("PlansSection wheel scrolling", () => {
+describe("MainSection wheel scrolling", () => {
   it("maps vertical wheel gestures to horizontal scroll when section is anchored", async () => {
-    const { getScrollLeft } = await renderPlansSection();
+    const { getScrollLeft } = await renderMainSection();
 
     const event = new WheelEvent("wheel", { deltaY: 100, cancelable: true });
     window.dispatchEvent(event);
@@ -132,7 +131,7 @@ describe("PlansSection wheel scrolling", () => {
   });
 
   it("lets vertical scroll pass through after reaching the horizontal end", async () => {
-    const { getScrollLeft, setScrollLeft } = await renderPlansSection();
+    const { getScrollLeft, setScrollLeft } = await renderMainSection();
     setScrollLeft(1040);
 
     const event = new WheelEvent("wheel", { deltaY: 120, cancelable: true });
@@ -149,7 +148,7 @@ describe("PlansSection wheel scrolling", () => {
       bottom: 1170,
     };
 
-    const { getScrollLeft } = await renderPlansSection();
+    const { getScrollLeft } = await renderMainSection();
 
     const event = new WheelEvent("wheel", { deltaY: 120, cancelable: true });
     window.dispatchEvent(event);

@@ -1,27 +1,21 @@
 import styles from "./Sections.module.css";
 
-type StoriesSectionProps = {
-  eyebrow: string;
+type FooterSectionProps = {
   title: string;
-  description: string;
-  placeholders?: number;
+  button: string;
 };
 
-export function StoriesSection({
-  eyebrow,
-  title,
-  description,
-  placeholders = 3,
-}: StoriesSectionProps) {
-  const placeholderItems = Array.from({ length: placeholders });
+export function FooterSection({ title, button }: FooterSectionProps) {
+  const placeholderItems = Array.from({ length: 3 });
 
   return (
     <section className={styles.section}>
       <div className={styles.sectionInner}>
         <div className={styles.sectionContent}>
-          <span className={styles.tag}>{eyebrow}</span>
           <h2>{title}</h2>
-          <p>{description}</p>
+          <button type="button" className={styles.ctaButton}>
+            {button}
+          </button>
           <div className={styles.placeholderGrid} aria-hidden="true">
             {placeholderItems.map((_, index) => (
               <div key={index} />
