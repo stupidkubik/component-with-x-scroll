@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useId, useRef } from "react";
 import type { CSSProperties, ReactNode } from "react";
 import styles from "./Sections.module.css";
@@ -14,6 +15,8 @@ const cardImagePaths = [
 
 const getCardImage = (index: number) =>
   cardImagePaths[index] ?? cardImagePaths[index % cardImagePaths.length];
+
+const labelIcon = "/images/icons/lightning.svg";
 
 export type PlanCardData = {
   label: string;
@@ -357,7 +360,7 @@ export function MainSection({
           >
             <div className={styles.scrollerTrack}>
               {scrollerCards.map((card) => {
-                const cardStyle: CSSProperties | undefined = card.width
+                const wrapperStyle: CSSProperties | undefined = card.width
                   ? { width: `${card.width}px` }
                   : undefined;
                 const imageStyle: CSSProperties | undefined = card.image
@@ -365,21 +368,34 @@ export function MainSection({
                   : undefined;
 
                 return (
-                  <article
+                  <div
                     key={card.title}
-                    className={styles.card}
-                    role="listitem"
-                    style={cardStyle}
+                    className={styles.cardWrapper}
+                    style={wrapperStyle}
+                    role="presentation"
                   >
-                    <span className={styles.cardLabel}>{card.label}</span>
-                    <h3>{card.title}</h3>
-                    <p>{card.description}</p>
-                    <div
-                      className={styles.cardImage}
-                      aria-hidden="true"
-                      style={imageStyle}
-                    />
-                  </article>
+                    <article className={styles.card} role="listitem">
+                      <span className={styles.cardLabel}>
+                        <Image
+                          src={labelIcon}
+                          alt=""
+                          width={16}
+                          height={16}
+                          className={styles.cardLabelIcon}
+                          aria-hidden="true"
+                        />
+                        <span className={styles.cardLabelText}>{card.label}</span>
+                        <span className={styles.cardLabelLine} aria-hidden="true" />
+                      </span>
+                      <h3>{card.title}</h3>
+                      <p>{card.description}</p>
+                      <div
+                        className={styles.cardImage}
+                        aria-hidden="true"
+                        style={imageStyle}
+                      />
+                    </article>
+                  </div>
                 );
               })}
             </div>

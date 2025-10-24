@@ -196,25 +196,49 @@
   scroll-snap-type: none;
 }
 
-.card {
+.cardWrapper {
   flex: 0 0 auto;
   width: clamp(300px, 38vw, 360px);
-  background-color: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  scroll-snap-align: start;
-  height: 530px;
-  margin-right: 120px;
+  display: flex;
 }
 
-.card:last-child {
-  margin-right: 0;
+.card {
+  width: 100%;
+  scroll-snap-align: start;
+  height: 530px;
+  padding-right: 120px;
 }
 
 .cardLabel {
+  display: flex;
+  gap: 6px;
+  width: 100%;
   font-size: 16px;
   color: var(--color-black-40);
   font-family: "PT Sans", sans-serif;
   font-weight: 400;
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+
+.cardLabelIcon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.cardLabelText {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.cardLabelLine {
+  flex: 1 1 322px;
+  max-width: 322px;
+  width: 100%;
+  height: 2px;
+  background-color: var(--color-black-40);
 }
 
 .card h3 {
