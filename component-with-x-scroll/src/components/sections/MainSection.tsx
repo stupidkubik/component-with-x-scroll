@@ -350,7 +350,10 @@ export function MainSection({
         <aside className={styles.mainLeadColumn}>
           <div className={styles.mainLeadHeader}>
             <h2 id={headingId}>{title}</h2>
-            <button type="button" className={styles.ctaButton}>
+            <button
+              type="button"
+              className={`${styles.ctaButton} ${styles.mainSectionCta}`}
+            >
               {button}
             </button>
           </div>
@@ -369,7 +372,7 @@ export function MainSection({
             <div className={styles.scrollerTrack}>
               {scrollerCards.map((card) => {
                 const wrapperStyle: CSSProperties | undefined = card.width
-                  ? { width: `${card.width}px` }
+                  ? ({ "--card-width": `${card.width}px` } as CSSProperties)
                   : undefined;
                 const imageStyle: CSSProperties | undefined = card.image
                   ? { backgroundImage: `url(${card.image})` }

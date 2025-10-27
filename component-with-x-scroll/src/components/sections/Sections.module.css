@@ -49,6 +49,12 @@
   gap: 32px;
 }
 
+.mainLeadHeader {
+  display: grid;
+  height: min-content;
+  gap: 72px;
+}
+
 .mainLeadHeader h2 {
   font-family: "Gramatika", "PT Sans", sans-serif;
   font-weight: 400;
@@ -70,7 +76,6 @@
 }
 
 .ctaButton {
-  margin-top: 71px;
   width: 242px;
   height: 56px;
   border-radius: 10px;
@@ -86,6 +91,10 @@
 .ctaButton:hover {
   transform: translateY(-2px);
   box-shadow: 0 12px 24px rgba(58, 166, 94, 0.35);
+}
+
+.mainSectionCta {
+  justify-self: flex-start;
 }
 
 .sectionScroller {
@@ -136,6 +145,7 @@
   flex: 0 0 auto;
   display: flex;
   flex-direction: column;
+  width: var(--card-width, auto);
 }
 
 .card {
@@ -205,7 +215,6 @@
 .cardImageWrapper {
   position: relative;
   height: fit-content;
-  margin-top: auto;
 }
 
 .cardImage {
@@ -260,4 +269,103 @@
   border-radius: 24px;
   background: rgba(255, 255, 255, 0.06);
   border: 1px dashed rgba(255, 255, 255, 0.24);
+}
+
+@media (max-width: 768px) {
+  .section {
+    padding: 56px 0 72px 32px;
+  }
+
+  .mainLayout {
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+  }
+
+  .mainLeadColumn,
+  .mainLeadHeader {
+    display: contents;
+    font-size: 25px;
+    width: 260px;
+  }
+
+  .mainLeadHeader h2 {
+    order: 0;
+    font-size: 38px;
+    width: 260px;
+    line-height: 0.87;
+    letter-spacing: 0.02em;
+  }
+
+  .mainScroller {
+    order: 1;
+    max-height: 400px;
+  }
+
+  .sectionScroller::after {
+    display: none;
+  }
+
+  .scroller {
+    scroll-padding-left: 16px;
+    scroll-padding-right: 16px;
+  }
+
+  .mainSectionCta {
+    order: 2;
+    width: 242px;
+    margin-top: 0;
+    font-size: 18px;
+  }
+
+
+  .card {
+    min-height: 400px;
+    padding-right: 32px;
+  }
+
+  .cardOverlay {
+    display: none;
+  }
+
+  .cardDescription {
+    width: 100%;
+  }
+
+  .cardTitle {
+    width: 240px;
+    font-size: 24px;
+    padding-top: 10px;
+    line-height: 1.11em;
+    letter-spacing: 0.06em;
+  }
+
+  .cardDescription {
+    font-size: 16px;
+    padding: 5px 5px 25px 0;
+
+  }
+
+  .cardLabelText {
+    letter-spacing: 0.004em;
+  }
+
+  .cardWrapper {
+    width: 323px;
+  }
+
+  .card {
+    min-height: 400px;
+    padding-right: 48px;
+  }
+}
+
+@media (max-width: 360px) {
+  .section {
+    padding: 72px 20px 56px;
+  }
+
+  .mainSectionCta {
+    display: none;
+  }
 }
