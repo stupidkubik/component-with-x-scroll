@@ -4,10 +4,10 @@ import styles from "./page.module.css";
 export default function Home() {
   return (
     <main className={styles.page}>
-      {/*     <HeaderSection
+      <HeaderSection
         title="Tu primer empleo tech paso a paso"
         button="Agenda una consulta"
-      /> */}
+      />
 
       <MainSection
         title={

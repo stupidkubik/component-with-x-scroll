@@ -24,6 +24,10 @@ export type PlanCardData = {
   description: string;
   image: string;
   width?: number;
+  overlay?: {
+    stat: string;
+    text: string;
+  };
 };
 
 export const defaultPlanCards: PlanCardData[] = [
@@ -32,35 +36,39 @@ export const defaultPlanCards: PlanCardData[] = [
     title: "Consulta de carrera gratuita",
     description: "Obtendrás un plan personalizado basado en tus fortalezas, objetivos y experiencia",
     image: getCardImage(0),
-    width: 407,
+    width: 527,
   },
   {
     label: "Habilidades tech en demanda",
     title: "Bootcamp en línea",
     description: "Aprende de forma práctica todo lo necesario para convertirte en Analista de Datos",
     image: getCardImage(1),
-    width: 534,
+    width: 654,
   },
   {
     label: "¡Estás listo para ser contratado!",
     title: "Acelerador de carrera",
     description: "Trabajarás 1 a 1 con un coach personal para elaborar un CV llamativo, armar un portafolio de proyectos reales y llegar a tus entrevistas preparado",
     image: getCardImage(2),
-    width: 538,
+    width: 658,
   },
   {
     label: "Ingresos remotos + equilibrio trabajo-vida",
     title: "Tu primer empleo tech",
     description: "Podrás ganar desde $30,000 MXN al mes, con la oportunidad de trabajar a nivel global",
     image: getCardImage(3),
-    width: 498,
+    width: 618,
   },
   {
     label: "Una red que te respalda",
     title: "Apoyo de la comunidad TripleTen",
     description: "Conectarás con personas afines, para compartir logros y seguir creciendo juntos",
     image: getCardImage(4),
-    width: 530,
+    width: 572,
+    overlay: {
+      stat: "6",
+      text: "países en LATAM donde podrás asistir a nuestros eventos y conocer a otros miembros de la comunidad",
+    },
   },
 ];
 
@@ -374,26 +382,34 @@ export function MainSection({
                     style={wrapperStyle}
                     role="presentation"
                   >
-                    <article className={styles.card} role="listitem">
-                      <span className={styles.cardLabel}>
-                        <Image
-                          src={labelIcon}
-                          alt=""
-                          width={16}
-                          height={16}
-                          className={styles.cardLabelIcon}
-                          aria-hidden="true"
-                        />
-                        <span className={styles.cardLabelText}>{card.label}</span>
-                        <span className={styles.cardLabelLine} aria-hidden="true" />
-                      </span>
-                      <h3>{card.title}</h3>
-                      <p>{card.description}</p>
-                      <div
-                        className={styles.cardImage}
+                    <span className={styles.cardLabel}>
+                      <Image
+                        src={labelIcon}
+                        alt=""
+                        width={16}
+                        height={16}
+                        className={styles.cardLabelIcon}
                         aria-hidden="true"
-                        style={imageStyle}
                       />
+                      <span className={styles.cardLabelText}>{card.label}</span>
+                      <span className={styles.cardLabelLine} aria-hidden="true" />
+                    </span>
+                    <article className={styles.card} role="listitem">
+                      <h3 className={styles.cardTitle}>{card.title}</h3>
+                      <p className={styles.cardDescription}>{card.description}</p>
+                      <div className={styles.cardImageWrapper}>
+                        <div
+                          className={styles.cardImage}
+                          aria-hidden="true"
+                          style={imageStyle}
+                        />
+                        {card.overlay ? (
+                          <aside className={styles.cardOverlay}>
+                            <span className={styles.cardOverlayStat}>{card.overlay.stat}</span>
+                            <p className={styles.cardOverlayText}>{card.overlay.text}</p>
+                          </aside>
+                        ) : null}
+                      </div>
                     </article>
                   </div>
                 );

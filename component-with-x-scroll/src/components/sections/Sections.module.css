@@ -3,7 +3,6 @@
   color: var(--color-white);
   border-radius: 0;
   padding: 120px 0 120px 60px;
-  box-shadow: 0 40px 80px rgba(14, 14, 14, 0.5);
 }
 
 .sectionInner {
@@ -19,7 +18,7 @@
 .mainLayout {
   display: grid;
   grid-template-columns: 440px 1fr;
-  gap: 49px;
+  gap: 50px;
   align-items: stretch;
 }
 
@@ -57,12 +56,8 @@
   min-height: 200px;
   border-radius: 28px;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  background: radial-gradient(circle at 30% 30%,
-      rgba(255, 214, 197, 0.75),
-      rgba(26, 26, 26, 0.05)),
-    linear-gradient(135deg,
-      rgba(255, 255, 255, 0.12),
-      rgba(255, 255, 255, 0));
+  background: var(--color-background-green);
+
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -105,7 +100,7 @@
 }
 
 .ctaButton {
-  margin-top: 72px;
+  margin-top: 71px;
   width: 242px;
   height: 56px;
   border-radius: 10px;
@@ -162,28 +157,18 @@
   margin: 0;
   padding: 0;
   overflow-x: auto;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   scroll-snap-type: x proximity;
   scroll-padding-left: clamp(24px, 5vw, 48px);
   scroll-padding-right: clamp(24px, 5vw, 48px);
   overscroll-behavior-x: contain;
   overscroll-behavior-y: auto;
-  scrollbar-gutter: stable both-edges;
   -webkit-overflow-scrolling: touch;
 }
 
 .scroller::-webkit-scrollbar {
-  height: 6px;
-}
-
-.scroller::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.scroller::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 999px;
+  display: none;
 }
 
 .scrollerTrack {
@@ -197,28 +182,29 @@
 }
 
 .cardWrapper {
-  flex: 0 0 auto;
-  width: clamp(300px, 38vw, 360px);
   display: flex;
+  flex-direction: column;
 }
 
 .card {
-  width: 100%;
+  width: inherit;
+  min-height: 530px;
   scroll-snap-align: start;
-  height: 530px;
   padding-right: 120px;
+  display: flex;
+  flex-direction: column;
 }
 
 .cardLabel {
   display: flex;
-  gap: 6px;
+  gap: 5px;
   width: 100%;
   font-size: 16px;
   color: var(--color-black-40);
-  font-family: "PT Sans", sans-serif;
+  font-family: Gramatika, "PT Sans", sans-serif;
   font-weight: 400;
-  letter-spacing: 0.04em;
-  line-height: 1;
+  letter-spacing: 0.05em;
+
 }
 
 .cardLabelIcon {
@@ -234,38 +220,91 @@
 }
 
 .cardLabelLine {
-  flex: 1 1 322px;
-  max-width: 322px;
+  margin: 0 4px;
   width: 100%;
   height: 2px;
   background-color: var(--color-black-40);
+  align-self: center;
 }
 
-.card h3 {
+.cardTitle {
   margin: 0;
   padding-top: 16px;
-  font-family: "PT Sans", sans-serif;
-  font-size: 40px;
+  font-family: Gramatika, "PT Sans", sans-serif;
+  font-size: 43px;
   color: var(--color-white);
-  font-weight: 400;
+  font-weight: 500;
+  letter-spacing: 0.005em;
 }
 
-.card p {
+.cardDescription {
+  width: 375px;
   margin: 0;
-  padding: 8px 0 32px;
-  font-family: "PT Sans", sans-serif;
+  padding: 7px 0 32px;
+  font-family: Gramatika, "PT Sans", sans-serif;
   color: var(--color-black-40);
   font-size: 18px;
-  font-weight: 400;
+  font-weight: 500;
+  letter-spacing: 0.055em;
+  line-height: 1.2em;
+  flex-shrink: 0;
+}
+
+.cardDescriptionLine {
+  display: block;
+}
+
+.cardDescriptionLine+.cardDescriptionLine {
+  margin-top: 4px;
+}
+
+.cardImageWrapper {
+  position: relative;
+  margin-top: auto;
 }
 
 .cardImage {
-  height: 160px;
+  height: 530px;
   width: 100%;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background-size: cover;
-  background-position: center;
+  background-size: contain;
+  background-position: top;
   background-repeat: no-repeat;
+  flex-shrink: 0;
+}
+
+.cardOverlay {
+  position: absolute;
+  top: -26px;
+  right: -26px;
+  width: 238px;
+  padding: 24px 24px 40px 24px;
+  border-radius: 10px 50px;
+  background: var(--color-background-orange);
+  color: var(--color-background-black);
+  display: grid;
+  gap: 16px;
+  font-family: Gramatika, "PT Sans", sans-serif;
+
+}
+
+.cardOverlayStat {
+  font-weight: 500;
+  font-size: 72px;
+}
+
+.cardOverlayText {
+  margin: 0;
+  font-size: 14px;
+  color: var(--color-background-black);
+  font-weight: 400;
+  width: 100%;
+  letter-spacing: 0.08em;
+  line-height: 1.4em;
+}
+
+.cardWrapper {
+  flex: 0 0 auto;
+  display: flex;
 }
 
 .placeholderGrid {
@@ -306,6 +345,17 @@
     scroll-padding-left: 24px;
     scroll-padding-right: 24px;
   }
+
+  .cardOverlay {
+    top: -20px;
+    right: -20px;
+    width: clamp(200px, 42vw, 232px);
+    padding: 22px 24px;
+  }
+
+  .cardOverlayStat {
+    font-size: 60px;
+  }
 }
 
 @media (max-width: 768px) {
@@ -334,5 +384,26 @@
 
   .card {
     flex-basis: 280px;
+  }
+
+  .cardOverlay {
+    top: -16px;
+    right: -16px;
+    width: clamp(200px, 65vw, 220px);
+    padding: 18px 20px;
+    border-radius: 24px;
+  }
+
+  .cardOverlayStat {
+    font-size: 48px;
+  }
+
+  .cardOverlayHighlight {
+    font-size: 14px;
+    padding: 4px 12px;
+  }
+
+  .cardOverlayText {
+    font-size: 15px;
   }
 }
