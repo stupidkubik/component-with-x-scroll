@@ -1,6 +1,7 @@
 import { HeaderSection, MainSection, FooterSection } from "@/components/sections";
 import styles from "./page.module.css";
 
+/** Landing screen assembled from the three primary marketing sections. */
 export default function Home() {
   return (
     <main className={styles.page}>

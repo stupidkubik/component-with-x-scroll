@@ -5,6 +5,7 @@ type HeaderSectionProps = {
   button: string;
 };
 
+/** Leading hero section introducing the product promise and primary call to action. */
 export function HeaderSection({ title, button }: HeaderSectionProps) {
   return (
     <section className={styles.section}>

@@ -5,6 +5,7 @@ type FooterSectionProps = {
   button: string;
 };
 
+/** Closing section that teases community stories and replicates the CTA pattern. */
 export function FooterSection({ title, button }: FooterSectionProps) {
   const placeholderItems = Array.from({ length: 3 });
 
@@ -16,6 +17,7 @@ export function FooterSection({ title, button }: FooterSectionProps) {
           <button type="button" className={styles.ctaButton}>
             {button}
           </button>
+          {/* Placeholder tiles stand in for story cards until real content is wired. */}
           <div className={styles.placeholderGrid} aria-hidden="true">
             {placeholderItems.map((_, index) => (
               <div key={index} />

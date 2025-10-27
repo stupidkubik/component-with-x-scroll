@@ -5,6 +5,7 @@ import { useEffect, useId, useRef } from "react";
 import type { CSSProperties, ReactNode } from "react";
 import styles from "./Sections.module.css";
 
+// Asset pool used to back-fill card artwork when custom images are omitted.
 const cardImagePaths = [
   "/images/cards/card-image-1.png",
   "/images/cards/card-image-2.png",
@@ -18,6 +19,7 @@ const getCardImage = (index: number) =>
 
 const labelIcon = "/images/icons/lightning.svg";
 
+/** Content contract for a single plan card rendered in the horizontal scroller. */
 export type PlanCardData = {
   label: string;
   title: string;
@@ -30,6 +32,7 @@ export type PlanCardData = {
   };
 };
 
+/** Default dataset that keeps the section fully populated when no props are supplied. */
 export const defaultPlanCards: PlanCardData[] = [
   {
     label: "Plan de carrera seguro",
@@ -64,7 +67,7 @@ export const defaultPlanCards: PlanCardData[] = [
     title: "Apoyo de la comunidad TripleTen",
     description: "Conectarás con personas afines, para compartir logros y seguir creciendo juntos",
     image: getCardImage(4),
-    width: 572,
+    width: 692,
     overlay: {
       stat: "6",
       text: "países en LATAM donde podrás asistir a nuestros eventos y conocer a otros miembros de la comunidad",
@@ -78,6 +81,10 @@ type MainSectionProps = {
   cards?: PlanCardData[];
 };
 
+/**
+ * Horizontal scroller that showcases the learning plans.
+ * It traps wheel / keyboard / touch gestures while the block is in view so the experience feels native.
+ */
 export function MainSection({
   title,
   button,
@@ -96,30 +103,28 @@ export function MainSection({
     const DEACTIVATE_RATIO = 0.6;
     const noSnapClass = styles.scrollerNoSnap;
 
+    // Keep the vertical axis locked and disable scroll snapping while the JS handlers are in control.
+    const originalOverflowY = track.style.overflowY;
+    track.style.overflowY = "hidden";
+    if (noSnapClass) {
+      track.classList.add(noSnapClass);
+    }
+
     let active = false;
     let touchY = 0;
-    let snapTimer: ReturnType<typeof setTimeout> | null = null;
 
     const atStart = () => track.scrollLeft <= 1;
     const atEnd = () =>
       Math.ceil(track.scrollLeft + track.clientWidth) >= track.scrollWidth - 1;
 
-    const beginFreeScroll = () => {
+    // Scroll snapping creates visible jumps when the user stops mid-track; guard against it.
+    const ensureNoSnap = () => {
       if (noSnapClass) {
         track.classList.add(noSnapClass);
       }
-      if (snapTimer) {
-        clearTimeout(snapTimer);
-      }
-      snapTimer = setTimeout(endFreeScroll, 140);
     };
 
-    const endFreeScroll = () => {
-      if (noSnapClass) {
-        track.classList.remove(noSnapClass);
-      }
-    };
-
+    // Percentage of the section that is within the viewport, used to decide when to trap gestures.
     const visibleRatio = () => {
       const rect = container.getBoundingClientRect();
       const viewportTop = 0;
@@ -150,14 +155,9 @@ export function MainSection({
       track.removeEventListener("touchstart", onTouchStart);
       track.removeEventListener("touchmove", onTouchMove);
       track.removeAttribute("aria-live");
-      if (snapTimer) {
-        clearTimeout(snapTimer);
-      }
-      if (noSnapClass) {
-        track.classList.remove(noSnapClass);
-      }
     };
 
+    // Map vertical wheel movement to horizontal scrolling across the cards.
     const onWheel = (event: WheelEvent) => {
       if (!active) return;
 
@@ -175,12 +175,13 @@ export function MainSection({
         return;
       }
 
-      beginFreeScroll();
+      ensureNoSnap();
       track.scrollLeft += dominantDelta;
       event.preventDefault();
       event.stopPropagation();
     };
 
+    // Provide keyboard affordances similar to a native horizontally scrolling region.
     const onKey = (event: KeyboardEvent) => {
       if (!active) return;
       const key = event.key;
@@ -250,7 +251,7 @@ export function MainSection({
         return;
       }
 
-      beginFreeScroll();
+      ensureNoSnap();
       track.scrollLeft += delta;
       touchY = currentY;
       event.preventDefault();
@@ -274,6 +275,7 @@ export function MainSection({
       }
     };
 
+    // Dense thresholds unlock smooth transitions as the section enters and exits the viewport.
     const thresholds = Array.from({ length: 101 }, (_, index) => index / 100);
     const observer = new IntersectionObserver(
       (entries) => {
@@ -331,9 +333,7 @@ export function MainSection({
       track.removeEventListener("focusin", onPointerEnter);
       track.removeEventListener("focusout", onPointerLeave);
       track.removeEventListener("touchstart", onTouchStartBootstrap);
-      if (snapTimer) {
-        clearTimeout(snapTimer);
-      }
+      track.style.overflowY = originalOverflowY;
       if (noSnapClass) {
         track.classList.remove(noSnapClass);
       }
@@ -345,8 +345,8 @@ export function MainSection({
   const headingId = useId();
 
   return (
-    <section ref={sectionRef} className={`${styles.section} ${styles.mainSection}`}>
-      <div className={`${styles.sectionInner} ${styles.mainLayout}`}>
+    <section ref={sectionRef} className={`${styles.section}`}>
+      <div className={`${styles.mainLayout}`}>
         <aside className={styles.mainLeadColumn}>
           <div className={styles.mainLeadHeader}>
             <h2 id={headingId}>{title}</h2>
@@ -404,6 +404,7 @@ export function MainSection({
                           style={imageStyle}
                         />
                         {card.overlay ? (
+                          // Decorative overlay that highlights the reach of the community plan.
                           <aside className={styles.cardOverlay}>
                             <span className={styles.cardOverlayStat}>{card.overlay.stat}</span>
                             <p className={styles.cardOverlayText}>{card.overlay.text}</p>
