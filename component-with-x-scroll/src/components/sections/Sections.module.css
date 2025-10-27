@@ -52,20 +52,21 @@
 .mainLeadHeader {
   display: grid;
   height: min-content;
-  gap: 72px;
+  gap: 71px;
 }
 
 .mainLeadHeader h2 {
+  margin: 0;
   font-family: "Gramatika", "PT Sans", sans-serif;
   font-weight: 400;
-  margin: 0;
-  gap: 16px;
-  font-size: 63px;
-  line-height: 0.86;
+  font-size: 64px;
+  line-height: 85%;
+  letter-spacing: -0.5px;
 }
 
 .mainLeadHeader strong {
   font-weight: 700;
+  font-style: Bold;
 }
 
 .mainScroller {
@@ -77,15 +78,18 @@
 
 .ctaButton {
   width: 242px;
-  height: 56px;
-  border-radius: 10px;
   border: none;
+  border-radius: 12px;
+  border-bottom: 1px solid #2A2A00;
+  padding: 16px 8px;
   background-color: var(--color-background-green);
   color: var(--color-background-black);
+  font-family: Gramatika, "PT Sans", sans-serif;
+  font-weight: 500;
   font-size: 18px;
-  font-weight: 400;
-  cursor: pointer;
-  letter-spacing: 0.02em;
+  line-height: 22px;
+  letter-spacing: 1.1px;
+  vertical-align: middle;
 }
 
 .ctaButton:hover {
@@ -161,12 +165,12 @@
   display: flex;
   gap: 5px;
   width: 100%;
-  font-size: 16px;
+  font-size: 17px;
   color: var(--color-black-40);
   font-family: Gramatika, "PT Sans", sans-serif;
-  font-weight: 400;
-  letter-spacing: 0.05em;
-
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: 0.5px;
 }
 
 .cardLabelIcon {
@@ -191,12 +195,13 @@
 
 .cardTitle {
   margin: 0;
-  padding-top: 16px;
+  padding-top: 14px;
   font-family: Gramatika, "PT Sans", sans-serif;
-  font-size: 43px;
+  font-size: 40px;
   color: var(--color-white);
   font-weight: 500;
-  letter-spacing: 0.005em;
+  line-height: 42px;
+  letter-spacing: 1.6px;
 }
 
 .cardDescription {
@@ -206,10 +211,11 @@
   font-family: Gramatika, "PT Sans", sans-serif;
   color: var(--color-black-40);
   font-size: 18px;
-  font-weight: 500;
-  letter-spacing: 0.055em;
-  line-height: 1.2em;
   flex-shrink: 0;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 22px;
+  letter-spacing: 0.9px;
 }
 
 .cardImageWrapper {
@@ -279,7 +285,7 @@
   .mainLayout {
     display: flex;
     flex-direction: column;
-    gap: 50px;
+    gap: 0;
   }
 
   .mainLeadColumn,
@@ -291,10 +297,9 @@
 
   .mainLeadHeader h2 {
     order: 0;
-    font-size: 38px;
     width: 260px;
-    line-height: 0.87;
-    letter-spacing: 0.02em;
+    font-size: 40px;
+    padding-bottom: 47px;
   }
 
   .mainScroller {
@@ -318,7 +323,6 @@
     font-size: 18px;
   }
 
-
   .card {
     min-height: 400px;
     padding-right: 32px;
@@ -334,20 +338,22 @@
 
   .cardTitle {
     width: 240px;
+    padding-top: 7px;
     font-size: 24px;
-    padding-top: 10px;
-    line-height: 1.11em;
-    letter-spacing: 0.06em;
+    line-height: 28px;
   }
 
   .cardDescription {
+    padding: 3px 5px 25px 0;
     font-size: 16px;
-    padding: 5px 5px 25px 0;
-
+    font-weight: 400;
+    line-height: 20px;
   }
 
   .cardLabelText {
-    letter-spacing: 0.004em;
+    font-size: 14px;
+    line-height: 18px;
+    letter-spacing: 0.7px;
   }
 
   .cardWrapper {
