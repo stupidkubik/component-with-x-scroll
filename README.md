@@ -1,36 +1,90 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Component with X Scroll
 
-## Getting Started
+Маркетинговый лендинг, собранный на Next.js 16 / React 19, с ключевым интерактивным блоком ― горизонтальным треком карточек, который перехватывает вертикальную прокрутку пользователя. Секция «Tu camino paso a paso…» демонстрирует этапы обучения и выглядит как нативный карусельный скролл во всех сценариях: колесо мыши, клавиатура, тач-свайп.
 
-First, run the development server:
+## Стек и структура
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Next.js App Router, TypeScript, CSS Modules.
+- Главный экран собирается из трёх секций (`HeaderSection`, `MainSection`, `FooterSection`) в `src/app/page.tsx`.
+- Горизонтальный трек находится в `src/components/sections/MainSection.tsx`, стили — `Sections.module.css`.
+- Дефолтные данные карточек лежат в `defaultPlanCards`; можно заменить их собственным массивом `PlanCardData`.
+
+```
+src/
+├─ app/
+│  ├─ page.tsx              # сборка лендинга
+│  └─ globals.css           # цветовая палитра, шрифты
+└─ components/
+   └─ sections/
+      ├─ HeaderSection.tsx
+      ├─ MainSection.tsx    # логика горизонтального скролла
+      ├─ FooterSection.tsx
+      └─ Sections.module.css
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Быстрый старт
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm install
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Приложение поднимется на `http://localhost:3000`. Доступные команды: `npm run build`, `npm run start`, `npm run lint`, `npm run test`.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## Как устроен горизонтальный скролл
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Вся логика обёрнута в `useEffect` внутри `MainSection.tsx` и по сути реализует управляющий хук, который активируется только когда секция достаточно видима.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 1. Зона активации с гистерезисом
+- Порог включения `ACTIVATE_RATIO = 0.7`, выключения `DEACTIVATE_RATIO = 0.6`; это убирает «мигание» при пересечении границы.
+- Статус рассчитывается двумя каналами:
+  - `IntersectionObserver` с сотней порогов (`0..1` шагом `0.01`) — плавный вход/выход.
+  - Ручная проверка `handleScrollState` на `scroll/resize` — страховка, если IO пропустит кадр.
 
-## Deploy on Vercel
+### 2. Перекладка вертикальных жестов в горизонталь
+- Листенер `onWheel` выбирает доминирующую дельту (`deltaY` или `deltaX`) и добавляет её в `scrollLeft`.
+- Пока трек не упирается в края, событие `preventDefault()` и страница не двигается; на краях жест «проламывается» дальше по странице.
+- Листенер навешан на `window` с `{ passive: false }`, чтобы реально отменять нативный скролл.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 3. Поведение клавиатуры как у нативного горизонтального скролла
+- Стрелки и `PageUp/PageDown/Home/End/Space` двигают трек шагом (~20% ширины) или страницей (~90%).
+- Гладкая прокрутка через `scrollBy/scrollTo({ behavior: "smooth" })`.
+- Обработка клавиш активна только в «активном» режиме секции.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 4. Тач-свайпы
+- На `touchstart` сохраняется `clientY`, на `touchmove` дельта вертикального свайпа превращается в горизонтальный `scrollLeft`.
+- Логика краёв совпадает с колесом: на старте/конце события отдаются странице.
+- `onTouchStartBootstrap` активирует режим при первом касании, чтобы свайп сразу работал.
+
+### 5. Контроль scroll-snap
+- Функция `ensureNoSnap()` вешает класс `scrollerNoSnap` (см. `Sections.module.css`) и отключает `scroll-snap-type`, чтобы не было рывков при остановке по центру карточки.
+- Класс добавляется при активации, а также перед любым жестом прокрутки.
+
+### 6. Управление жизненным циклом и границами
+- Флаг `active` хранит состояние режима; при активации навешиваются `wheel`, `keydown`, `touchstart`, `touchmove`, при деактивации — снимаются.
+- Края трека определяются с запасом: `scrollLeft <= 1` и `ceil(scrollLeft + clientWidth) >= scrollWidth - 1`, чтобы учесть округления.
+- `pointerenter/mouseenter/focusin` принудительно включают режим, если пользователь «приземлился» прямо внутри секции.
+- `pointerleave/mouseleave/focusout` выключают режим только если видимость уже ниже `DEACTIVATE_RATIO`.
+
+### 7. Доступность
+- Трек завернут в `role="region"` + `aria-labelledby`, список карточек — `role="list"` с `role="listitem"`.
+- На период активности включается `aria-live="polite"`; если живой контент не зачитывается, можно убрать атрибут.
+
+### 8. Аккуратный cleanup
+- `return` в `useEffect` деактивирует все листенеры, отключает `IntersectionObserver`, возвращает исходный `overflowY`, снимает `noSnap` и `aria-live`.
+
+### Почему скролл ощущается нативным
+- Гистерезис + плотные пороги дают плавный вход/выход из режима перехвата.
+- Перехватываются только реальные жесты внутри секции — за её пределами прокрутка «пролетает» дальше.
+- Критичные обработчики зарегистрированы с `passive: false`, поэтому можно законно вызывать `preventDefault`.
+- Scroll-snap принудительно отключается, что убирает резкие рывки при произвольных остановках.
+
+---
+
+## Кастомизация
+
+- Передайте собственный массив карточек в `MainSection cards={...}` или обновите `defaultPlanCards`, чтобы изменить ширину (`width`), фон (`image`) и декоративные оверлеи (`overlay`).
+- Стили горизонтального трека и модификатор `scrollerNoSnap` находятся в `Sections.module.css`; там же управляется адаптивное поведение.
+- Цвета и шрифты настраиваются в `src/app/globals.css`.
