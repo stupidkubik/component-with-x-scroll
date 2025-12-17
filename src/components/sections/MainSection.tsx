@@ -208,7 +208,11 @@ export function MainSection({
           break;
         case " ":
           event.preventDefault();
-          event.shiftKey ? goLeft(pageDistance) : goRight(pageDistance);
+          if (event.shiftKey) {
+            goLeft(pageDistance);
+          } else {
+            goRight(pageDistance);
+          }
           break;
         case "ArrowUp":
           event.preventDefault();

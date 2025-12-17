@@ -29,7 +29,7 @@ let currentRect: Rect = defaultRect;
 
 const rectSpy = vi
   .spyOn(HTMLElement.prototype, "getBoundingClientRect")
-  .mockImplementation(function () {
+  .mockImplementation(function (this: HTMLElement | undefined) {
     if (this instanceof HTMLElement) {
       return currentRect;
     }
